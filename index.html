@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>007 究極策略版</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="homePage" class="page active home-page">
+        <h1>007</h1>
+        <h2>策略對決</h2>
+        <p>裝子彈、開槍、反彈、大砲！</p>
+        <button class="btn btn-primary" onclick="showPage('settings')">開始遊戲</button>
+        <button class="btn btn-secondary" onclick="showPage('rules')">規則說明</button>
+        <div id="dateDisplay" class="date-info"></div>
+    </div>
+
+    <div id="settingsPage" class="page">
+        <h2>輸入您的暱稱</h2>
+        <input type="text" id="playerName" placeholder="例如：龐德" value="玩家1">
+        
+        <h3>選擇對手數量</h3>
+        <select id="botCount" style="padding: 10px; width: 100%; margin-bottom: 20px;">
+            <option value="1">1 位電腦對手</option>
+            <option value="2">2 位電腦對手</option>
+            <option value="3" selected>3 位電腦對手 (標準)</option>
+        </select>
+
+        <button class="btn btn-primary" onclick="initGame()">進入戰場</button>
+        <button class="btn btn-secondary" onclick="showPage('home')">返回</button>
+    </div>
+
+    <div id="gamePage" class="page game-container">
+        <div class="header-bar">
+            <button class="btn-small" onclick="showPage('home')">退出</button>
+            <span>回合: <span id="roundDisplay">1</span></span>
+        </div>
+
+        <div id="gameLog" class="log-box">遊戲開始！請選擇動作...</div>
+
+        <div id="arena" class="arena">
+            </div>
+
+        <div id="controls" class="controls-area">
+            <h3>選擇你的動作：</h3>
+            <div class="action-buttons">
+                <button class="btn-action" onclick="playerAction('load')">
+                    🖐 裝子彈<br><small>(+1彈)</small>
+                </button>
+                <button class="btn-action" onclick="playerAction('defend')">
+                    🛡️ 保護我<br><small>(防禦)</small>
+                </button>
+                <button class="btn-action" onclick="playerAction('reflect')">
+                    🤞 反彈<br><small>(反殺)</small>
+                </button>
+                <button class="btn-action btn-danger" id="btnShoot" onclick="prepareAttack('shoot')" disabled>
+                    🔫 打死你<br><small>(需1彈)</small>
+                </button>
+                <button class="btn-action btn-purple" id="btnBazooka" onclick="prepareAttack('bazooka')" disabled>
+                    🚀 大砲<br><small>(需3氣)</small>
+                </button>
+            </div>
+            <div id="targetSelector" style="display:none; margin-top:15px;">
+                <p>要攻擊誰？</p>
+                <div id="targetButtons"></div>
+                <button class="btn-small" onclick="cancelAttack()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="rulesPage" class="page">
+        <h2>📜 007 遊戲規則</h2>
+        <ul>
+            <li><strong>裝子彈：</strong>獲得 1 發子彈，集氣 +1。</li>
+            <li><strong>打死你：</strong>消耗 1 發子彈攻擊。若對方沒防禦，對方淘汰。</li>
+            <li><strong>保護我：</strong>防禦所有攻擊（包含大砲）。</li>
+            <li><strong>反彈：</strong>反殺普通攻擊（攻擊者淘汰）。對大砲無效。</li>
+            <li><strong>大砲：</strong>集氣滿 3 次可用。無視反彈，但會被保護擋下。</li>
+        </ul>
+        <button class="btn btn-secondary" onclick="showPage('home')">返回</button>
+    </div>
+
+    <script src="js/script.js"></script>
+</body>
+</html>

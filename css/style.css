@@ -1,0 +1,84 @@
+/* css/style.css */
+* { box-sizing: border-box; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
+
+body {
+    margin: 0; padding: 0;
+    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #333;
+}
+
+.page {
+    display: none;
+    width: 90%;
+    max-width: 800px;
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+    animation: fadeIn 0.5s;
+}
+
+.page.active { display: block; }
+
+@keyframes fadeIn { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* 首頁樣式 */
+.home-page { text-align: center; background: rgba(255,255,255,0.9); }
+.home-page h1 { font-size: 80px; margin: 0; color: #1e3c72; }
+.date-info { margin-top: 20px; color: #666; }
+
+/* 按鈕樣式 */
+.btn {
+    padding: 12px 25px; margin: 10px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px;
+    transition: transform 0.2s;
+}
+.btn:hover { transform: scale(1.05); }
+.btn-primary { background: #1e3c72; color: white; }
+.btn-secondary { background: #6c757d; color: white; }
+.btn-small { padding: 5px 10px; background: #ddd; border: none; cursor: pointer; border-radius: 3px; }
+
+/* 遊戲區域 */
+.game-container { position: relative; }
+.header-bar { display: flex; justify-content: space-between; margin-bottom: 15px; font-weight: bold; }
+
+.log-box {
+    background: #333; color: #0f0; font-family: monospace; padding: 10px;
+    height: 100px; overflow-y: auto; border-radius: 5px; margin-bottom: 20px;
+    border: 2px solid #555;
+}
+
+/* 競技場 (玩家卡片) */
+.arena {
+    display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 20px;
+}
+
+.player-card {
+    border: 2px solid #ddd; border-radius: 10px; padding: 10px; width: 140px; text-align: center;
+    background: #f8f9fa; transition: all 0.3s;
+}
+.player-card.user { border-color: #1e3c72; background: #eef2ff; }
+.player-card.dead { opacity: 0.5; background: #555; color: white; text-decoration: line-through; }
+.player-card.winner { border-color: gold; background: #fffbe6; transform: scale(1.1); box-shadow: 0 0 15px gold; }
+
+.stats { font-size: 12px; margin-top: 5px; display: flex; justify-content: space-around; }
+.stat-badge { background: #ddd; padding: 2px 6px; border-radius: 10px; }
+
+/* 動作按鈕區 */
+.controls-area { border-top: 1px solid #eee; padding-top: 20px; text-align: center; }
+.action-buttons { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+
+.btn-action {
+    padding: 10px 15px; border: 1px solid #ccc; border-radius: 8px; background: white; cursor: pointer;
+    min-width: 100px;
+}
+.btn-action:hover:not(:disabled) { background: #f0f0f0; border-color: #999; }
+.btn-action:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-danger { color: #dc3545; border-color: #dc3545; }
+.btn-danger:hover:not(:disabled) { background: #dc3545; color: white; }
+.btn-purple { color: #6f42c1; border-color: #6f42c1; }
+.btn-purple:hover:not(:disabled) { background: #6f42c1; color: white; }
