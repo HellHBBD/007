@@ -17,7 +17,7 @@
         <div id="dateDisplay" class="date-info"></div>
     </div>
 
-    <div id="settingsPage" class="page">
+    <form id="settingsPage" class="page" onsubmit="event.preventDefault(); initGame();">
         <h2>輸入您的暱稱</h2>
         <input type="text" id="playerName" placeholder="例如：龐德" value="玩家1">
         
@@ -28,9 +28,9 @@
             <option value="3" selected>3 位電腦對手 (標準)</option>
         </select>
 
-        <button class="btn btn-primary" onclick="initGame()">進入戰場</button>
-        <button class="btn btn-secondary" onclick="showPage('home')">返回</button>
-    </div>
+        <button type="submit" class="btn btn-primary">進入戰場</button>
+        <button type="button" class="btn btn-secondary" onclick="showPage('home')">返回</button>
+    </form>
 
     <div id="gamePage" class="page game-container">
         <div class="header-bar">
