@@ -82,3 +82,32 @@ body {
 .btn-danger:hover:not(:disabled) { background: #dc3545; color: white; }
 .btn-purple { color: #6f42c1; border-color: #6f42c1; }
 .btn-purple:hover:not(:disabled) { background: #6f42c1; color: white; }
+
+/* 遊戲規則表格樣式 */
+.rules-table {
+    width: 100%;
+    border-collapse: separate;
+	border-spacing: 0;
+    margin-top: 20px;
+    margin-bottom: 20px;
+    border-radius: 8px; /* Added for rounded corners */
+    overflow: hidden; /* Ensures content respects rounded corners */
+    border: 1px solid #6C757D; /* Added border */
+}
+
+.rules-table td {
+    padding: 8px;
+    vertical-align: top;
+    text-align: left;
+}
+
+.rules-table th {
+    background-color: #6C757D;
+    color: white;
+    padding: 10px;
+    text-align: left;
+}
+
+.rules-table tr:hover {
+    background-color: #f1f1f1;
+}
