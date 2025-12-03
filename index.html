@@ -10,7 +10,7 @@
         <div id="homePage" class="page active home-page">
             <h1>007</h1>
             <h2>策略對決</h2>
-            <p>裝子彈、開槍、反彈、大砲！</p>
+            <p>蓄能、打死你、反彈、大砲！</p>
             <button class="btn btn-primary" onclick="showPage('settings')">開始遊戲</button>
             <button class="btn btn-secondary" onclick="showPage('rules')">規則說明</button>
             <div id="dateDisplay" class="date-info"></div>
@@ -44,7 +44,7 @@
             <div id="controls" class="controls-area">
                 <h3>選擇你的動作：</h3>
                 <div class="action-buttons">
-                    <button class="btn-action" onclick="playerAction('load')"> 🖐 裝子彈<br /><small>(+1彈)</small> </button>
+                    <button class="btn-action" onclick="playerAction('load')"> 🖐 蓄能<br /><small>(+1彈)</small> </button>
                     <button class="btn-action" onclick="playerAction('defend')"> 🛡️ 保護我<br /><small>(防禦)</small> </button>
                     <button class="btn-action" onclick="playerAction('reflect')"> 🤞 反彈<br /><small>(反殺)</small> </button>
                     <button class="btn-action btn-danger" id="btnShoot" onclick="prepareAttack('shoot')" disabled> 🔫 打死你<br /><small>(需1彈)</small> </button>
@@ -65,29 +65,36 @@
                     <tr>
                         <th>動作</th>
                         <th>說明</th>
+						<th>示意圖</th><tr>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td>裝子彈</td>
-                        <td>獲得 1 發子彈，集氣 +1。</td>
+                        <td>充能</td>
+                        <td>獲得 1 發子彈，能量 +1。</td>
+						<td><a href="media/蓄能.png"  target="_blank">圖1</a></td> </tr>
                     </tr>
                     <tr>
                         <td>打死你</td>
-                        <td>消耗 1 發子彈攻擊。若對方沒防禦，對方淘汰。</td>
+                        <td>子彈攻擊，消耗1個能量。若對方沒防禦，對方淘汰。</td>
+						<td><a href="media/打死你.png"  target="_blank">圖2</a></td> </tr>
                     </tr>
                     <tr>
                         <td>保護我</td>
                         <td>防禦所有攻擊（包含大砲）。</td>
+						<td><a href="media/保護我.png"  target="_blank">圖3</a></td> </tr>
                     </tr>
                     <tr>
                         <td>反彈</td>
                         <td>反殺普通攻擊（攻擊者淘汰）。對大砲無效。</td>
+						<td><a href="media/反彈.png"  target="_blank">圖4</a></td> </tr>
                     </tr>
                     <tr>
                         <td>大砲</td>
                         <td>集氣滿 3 次可用。無視反彈，但會被保護擋下。</td>
+						<td><a href="media/大砲.png"  target="_blank">圖5</a></td> </tr>
                     </tr>
+					
                 </tbody>
             </table>
             <button class="btn btn-secondary" onclick="showPage('home')">返回</button>
