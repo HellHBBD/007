@@ -11,13 +11,13 @@ body {
     align-items: center;
     color: #333;
 }
-
+	
 .page {
-    display: none;
+    display: none; /**/
     width: 90%;
-    max-width: 800px;
+    max-width: 1000px;
     background: white;
-    padding: 20px;
+    padding: 80px 20px;
     border-radius: 15px;
     box-shadow: 0 10px 25px rgba(0,0,0,0.5);
     animation: fadeIn 0.5s;
@@ -112,4 +112,8 @@ body {
 
 .rules-table tr:hover {
     background-color: #f1f1f1;
+}
+
+#playerName {
+    text-align: center;
 }

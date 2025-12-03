@@ -8,19 +8,19 @@
     </head>
     <body>
         <div id="homePage" class="page active home-page">
-            <h1>007</h1>
+            <h1>007啊007</h1>
             <h2>策略對決</h2>
-            <p>蓄能、打死你、反彈、大砲！</p>
+            <h3>蓄能、打死你、反彈、大砲！</h3>
             <button class="btn btn-primary" onclick="showPage('settings')">開始遊戲</button>
             <button class="btn btn-secondary" onclick="showPage('rules')">規則說明</button>
             <div id="dateDisplay" class="date-info"></div>
         </div>
 
-        <form id="settingsPage" class="page" onsubmit="event.preventDefault(); initGame();">
-            <h2>輸入您的暱稱</h2>
-            <input type="text" id="playerName" placeholder="例如：龐德" value="玩家1" />
+        <form id="settingsPage" class="page" onsubmit="event.preventDefault(); initGame();"style="text-align: center;">
+            <h3 style="text-align: center;">輸入您的暱稱</h3>
+            <input type="text" id="playerName" placeholder="例如：龐德" value="玩家1"  />
 
-            <h3>選擇對手數量</h3>
+            <h3 style="text-align: center;">選擇對手數量</h3>
             <select id="botCount" style="padding: 10px; width: 100%; margin-bottom: 20px">
                 <option value="1">1 位電腦對手</option>
                 <option value="2">2 位電腦對手</option>
