@@ -1,4 +1,3 @@
-// js/script.js
 
 // 全域變數
 let players = [];
@@ -290,19 +289,27 @@ function decideBotAction(bot) {
 
 function checkWinner() {
     const survivors = players.filter(p => p.hp > 0);
-    if (survivors.length === 1) {
-        document.getElementById('gameLog').innerHTML += `<br>🎉🎉 遊戲結束！優勝者是：${survivors[0].name} 🎉🎉`;
-        // 停用所有按鈕
-        document.querySelectorAll('button').forEach(b => b.disabled = true);
+    
+    // 如果只剩一人 (或者全部死光，雖然理論上這遊戲不會全滅但防呆)
+    if (survivors.length <= 1) {
+        let winnerName = survivors.length === 1 ? survivors[0].name : "無人生還";
+        
+        document.getElementById('gameLog').innerHTML += `<br>🎉🎉 遊戲結束！優勝者是：${winnerName} 🎉🎉`;
+        
         // 讓贏家卡片發光
         const cards = document.querySelectorAll('.player-card');
         cards.forEach(c => {
-             if(c.innerText.includes(survivors[0].name)) c.classList.add('winner');
+             if(survivors.length === 1 && c.innerText.includes(survivors[0].name)) {
+                 c.classList.add('winner');
+             }
         });
         
-        // 顯示重新開始按鈕 (透過 setTimeout 避免被 disabled 蓋掉)
-        setTimeout(() => {
-             document.getElementById('controls').innerHTML = "<button class='btn-primary' onclick='location.reload()'>重新開始</button>";
-        }, 500);
+        // 直接更新控制區為重新開始，不需要 setTimeout，也不要 disabled 按鈕
+        // 因為這裡一旦回傳 true，後面的 updateControls 就不會執行，不會被覆蓋
+        document.getElementById('controls').innerHTML = "<button class='btn-primary' onclick='location.reload()'>重新開始</button>";
+        
+        return true; // 回傳：遊戲結束
     }
+    
+    return false; // 回傳：遊戲尚未結束
 }

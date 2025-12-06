@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>007 - 技能對撞判定表</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+    <div id="skillPage" class="page active">
+        <h1>技能對撞判定表</h1>
+        <p class="description">當回合結算時，攻擊方與目標方動作的互動結果。</p>
+
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="background: #ddd; vertical-align: middle;">
+                            攻擊方<br>↓<br>目標方
+                        </th>
+
+                        <th>
+                            <img src="https://placehold.co/100x100?text=Reload" alt="裝彈" class="action-icon">
+                            裝彈
+                        </th>
+                        <th>
+                            <img src="https://placehold.co/100x100?text=Shoot" alt="開槍" class="action-icon">
+                            開槍
+                        </th>
+                        <th>
+                            <img src="https://placehold.co/100x100?text=Defend" alt="防禦" class="action-icon">
+                            防禦
+                        </th>
+                        <th>
+                            <img src="https://placehold.co/100x100?text=Reflect" alt="反彈" class="action-icon">
+                            反彈
+                        </th>
+                        <th>
+                            <img src="https://placehold.co/100x100?text=Bazooka" alt="大砲" class="action-icon">
+                            大砲
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="attacker-col">開槍 (Shoot)</td>
+                        <td>目標淘汰</td>
+                        <td>雙方淘汰</td>
+                        <td>防禦成功</td>
+                        <td><strong>攻擊者自爆</strong><br><small>(反彈)</small></td>
+                        <td>雙方淘汰</td>
+                    </tr>
+                    <tr>
+                        <td class="attacker-col">大砲 (Bazooka)</td>
+                        <td>目標淘汰</td>
+                        <td>雙方淘汰</td>
+                        <td>防禦成功</td>
+                        <td><strong>目標淘汰</strong><br><small>(貫穿)</small></td>
+                        <td>雙方淘汰</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="note">
+            <strong>判定說明：</strong>
+            <ul>
+                <li><strong>雙方淘汰：</strong> 攻擊與被攻擊方同時發動攻擊 (如互射)，兩人皆出局。</li>
+                <li><strong>反彈機制：</strong> 只能反彈普通手槍，「大砲」無法被反彈。</li>
+                <li><strong>貫穿效果：</strong> 大砲威力過大，遇到「反彈」動作時視為攻擊成功。</li>
+            </ul>
+        </div>
+
+        <div class="btn-group">
+            <a href="rule.html" class="btn">返回規則說明</a>
+            <a href="index.html" class="btn">回到遊戲首頁</a>
+        </div>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>007 遊戲規則</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <div id="rulesPage" class="page active">
+        <h2>📜 007 遊戲規則</h2>
+        <table class="rules-table">
+            <thead>
+                <tr>
+                    <th>動作</th>
+                    <th>說明</th>
+                    <th>示意圖</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>充能</td>
+                    <td>能量 +1。</td>
+                    <td><a href="media/蓄能.png" target="_blank">圖1</a></td>
+                </tr>
+                <tr>
+                    <td>打死你</td>
+                    <td>子彈攻擊，消耗1個能量。若對方沒防禦，對方淘汰。</td>
+                    <td><a href="media/打死你.png" target="_blank">圖2</a></td>
+                </tr>
+                <tr>
+                    <td>保護我</td>
+                    <td>防禦所有攻擊（包含大砲）。</td>
+                    <td><a href="media/保護我.png" target="_blank">圖3</a></td>
+                </tr>
+                <tr>
+                    <td>反彈</td>
+                    <td>反殺普通攻擊（攻擊者淘汰）。對大砲無效。</td>
+                    <td><a href="media/反彈.png" target="_blank">圖4</a></td>
+                </tr>
+                <tr>
+                    <td>大砲</td>
+                    <td>集氣滿 3 次可用。無視反彈，但會被保護擋下。</td>
+                    <td><a href="media/大砲.png" target="_blank">圖5</a></td>
+                </tr>
+            </tbody>
+        </table>
+        
+        <div class="btn-group">
+            <a href="skill.html" class="btn">查看技能對撞表</a>
+            <a href="javascript:void(0);" onclick="goToHome()" class="btn btn-secondary">返回</a>
+        </div>
+    </div>
+    <script src="script.js"></script>
+</body>
+</html>

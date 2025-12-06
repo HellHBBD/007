@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>007 戰場</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <div id="gamePage" class="page active game-container">
+        <div class="header-bar">
+            <button class="btn-small" onclick="goToHome()">退出</button>
+            <span>回合: <span id="roundDisplay">1</span></span>
+        </div>
+
+        <div id="gameLog" class="log-box">遊戲開始！請選擇動作...</div>
+
+        <div id="arena" class="arena"> </div>
+
+        <div id="controls" class="controls-area">
+            <h3>選擇你的動作：</h3>
+            <div class="action-buttons">
+                <button class="btn-action" onclick="playerAction('load')"> 🖐 蓄能<br /><small>(+1彈)</small> </button>
+                <button class="btn-action" onclick="playerAction('defend')"> 🛡️ 保護我<br /><small>(防禦)</small> </button>
+                <button class="btn-action" onclick="playerAction('reflect')"> 🤞 反彈<br /><small>(反殺)</small> </button>
+                <button class="btn-action btn-danger" id="btnShoot" onclick="prepareAttack('shoot')" disabled> 🔫 打死你<br /><small>(需1彈)</small> </button>
+                <button class="btn-action btn-purple" id="btnBazooka" onclick="prepareAttack('bazooka')" disabled> 🚀 大砲<br /><small>(需3氣)</small> </button>
+            </div>
+            <div id="targetSelector" style="display: none; margin-top: 15px">
+                <p>要攻擊誰？</p>
+                <div id="targetButtons"></div>
+                <button class="btn-small" onclick="cancelAttack()">取消</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // 在這裡加入一段小腳本，當頁面載入時自動初始化遊戲
+        window.onload = function() {
+            // 解析網址參數 (例如 ?playerName=龐德&botCount=3)
+            const urlParams = new URLSearchParams(window.location.search);
+            const pName = urlParams.get('playerName') || '玩家1';
+            const bCount = parseInt(urlParams.get('botCount')) || 3;
+            
+            // 呼叫原本 script.js 裡的初始化函數 (需修改 script.js 以接受參數)
+            // 假設原本是 initGame()，現在可能需要改成 initGame(pName, bCount)
+            if(typeof initGame === 'function') {
+                initGame(pName, bCount); 
+            }
+        };
+    </script>
+</body>
+</html>
