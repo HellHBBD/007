@@ -12,14 +12,18 @@
         <h2>策略對決</h2>
         <h3>蓄能、打死你、反彈、大砲！</h3>
         
-        <a href="javascript:void(0);" onclick="goToGame()" class="btn btn-primary">開始遊戲</a>
-        <a href="javascript:void(0);" onclick="goToRules()" class="btn btn-secondary">規則說明</a>
+        <div class="btn-group">
+            <a href="settings.html" class="btn btn-primary">開始遊戲</a>
+            <a href="javascript:void(0);" onclick="goToRules()" class="btn btn-secondary">規則說明</a>
+            <a href="record.html" class="btn btn-secondary">對戰紀錄</a>
+        </div>
         
         <div id="dateDisplay" class="date-info"></div>
     </div>
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
     <script>
         window.onload = showDate;
     </script>
+
 </body>
 </html>

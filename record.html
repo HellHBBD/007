@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>歷史戰績 - 007遊戲</title>
+    <link rel="stylesheet" href="css/style.css">
+
+</head>
+<body>
+
+    <div id="recordPage" class="page active">
+        <h1>📜 對戰紀錄</h1>
+        <p>檢視特務過去的任務表現</p>
+        <hr>
+
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>日期時間</th>
+                    <th>玩家名稱</th>
+                    <th>結果</th>
+                    <th>回合數</th>
+                </tr>
+            </thead>
+            <tbody id="historyList">
+                </tbody>
+        </table>
+        
+        <p id="noDataMsg" class="empty-msg" style="display:none;">目前還沒有戰鬥紀錄，快去挑戰吧！</p>
+
+        <div style="margin-top: 30px;">
+            <a href="index.html" class="btn btn-home">返回主頁</a>
+            <button id="clearHistoryBtn" class="btn btn-clear">清除紀錄</button>
+        </div>
+    </div>
+
+    <script src="js/script.js"></script>
+    <script>
+    function loadRecords() {
+        const records = JSON.parse(localStorage.getItem('gameRecords')) || [];
+        const historyList = document.getElementById('historyList');
+        const noDataMsg = document.getElementById('noDataMsg');
+
+        if (records.length === 0) {
+            noDataMsg.style.display = 'block';
+            historyList.style.display = 'none';
+            return;
+        }
+
+        noDataMsg.style.display = 'none';
+        historyList.style.display = '';
+        historyList.innerHTML = '';
+
+        records.forEach(record => {
+            const row = document.createElement('tr');
+            const resultClass = record.result === '勝利' ? 'result-win' : 'result-lose';
+            row.innerHTML = `
+                <td>${record.date}</td>
+                <td>${record.playerName}</td>
+                <td class="${resultClass}">${record.result}</td>
+                <td>${record.rounds}</td>
+            `;
+            historyList.appendChild(row);
+        });
+    }
+
+    function clearRecords() {
+        if (confirm('確定要清除所有對戰紀錄嗎？')) {
+            localStorage.removeItem('gameRecords');
+            loadRecords(); // Reload to show the empty state
+        }
+    }
+
+    window.onload = function() {
+        loadRecords();
+        const clearBtn = document.getElementById('clearHistoryBtn');
+        if (clearBtn) {
+            clearBtn.addEventListener('click', clearRecords);
+        }
+    };
+</script>
+</body>
+</html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>007 - 遊戲設定</title>
+    <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+    <div id="settingsPage" class="page active">
+        <h2>⚙️ 遊戲設定</h2>
+        <form class="settings-form" onsubmit="event.preventDefault(); startGame();">
+            <div class="form-group">
+                <label for="playerNameInput">你的名字：</label>
+                <input type="text" id="playerNameInput" placeholder="玩家" />
+            </div>
+            <div class="form-group">
+                <label for="botCountSelect">電腦數量：</label>
+                <select id="botCountSelect">
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3" selected>3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+            </div>
+            <div class="btn-group">
+                <button onclick="startGame()" class="btn btn-primary">開始遊戲</button>
+                <a href="index.html" class="btn btn-secondary">返回首頁</a>
+            </div>
+        </form>
+    </div>
+    <script src="js/script.js"></script>
+    <script>
+        function startGame() {
+            const playerName = document.getElementById('playerNameInput').value || '玩家';
+            const botCount = document.getElementById('botCountSelect').value;
+            window.location.href = `game.html?playerName=${encodeURIComponent(playerName)}&botCount=${botCount}`;
+        }
+    </script>
+</body>
+</html>

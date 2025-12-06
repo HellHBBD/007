@@ -1,28 +1,33 @@
+// 1. 頁面切換
+function goToHome() {
+    window.location.href = 'index.html';
+}
+
+function goToGame() {
+    window.location.href = 'settings.html';
+}
+
+function goToRules() {
+    window.location.href = 'rule.html';
+}
 
 // 全域變數
 let players = [];
 let round = 1;
 let userPendingAction = null; // 暫存玩家選擇的攻擊動作 (打死你/大砲)
 
-// 1. 初始化與頁面切換
-window.onload = function() {
-    showDate();
-};
-
+// 工具函數
 function showDate() {
-    const now = new Date();
-    document.getElementById('dateDisplay').innerText = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+    const dateDisplay = document.getElementById('dateDisplay');
+    if (dateDisplay) {
+        const now = new Date();
+        dateDisplay.innerText = now.toLocaleDateString() + " " + now.toLocaleTimeString();
+    }
 }
 
-function showPage(pageId) {
-    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-    document.getElementById(pageId + 'Page').classList.add('active');
-}
 
 // 2. 遊戲初始化
-function initGame() {
-    const userName = document.getElementById('playerName').value || "玩家";
-    const botCount = parseInt(document.getElementById('botCount').value);
+function initGame(userName = "玩家", botCount = 3) {
     
     players = [];
     round = 1;
@@ -39,7 +44,6 @@ function initGame() {
 
     renderArena();
     updateControls();
-    showPage('game');
 }
 
 function createPlayer(id, name, isUser) {
@@ -58,7 +62,7 @@ function createPlayer(id, name, isUser) {
 // 3. 渲染畫面 (更新 UI)
 function renderArena() {
     const arena = document.getElementById('arena');
-    arena.innerHTML = '';
+    arena.innerHTML = ''; //初始化 清空
 
     players.forEach(p => {
         const div = document.createElement('div');
@@ -87,7 +91,7 @@ function renderArena() {
     });
 
     // 檢查是否有贏家
-    checkWinner();
+    return checkWinner();
 }
 
 function updateControls() {
@@ -245,7 +249,9 @@ function processRound() {
     // D. 準備下一回合
     round++;
     document.getElementById('roundDisplay').innerText = round;
-    renderArena();
+    if (renderArena()) {
+        return;
+    }
     updateControls();
     
     // 捲動 log 到最下方
@@ -287,16 +293,33 @@ function decideBotAction(bot) {
     }
 }
 
+// 6. 紀錄功能 (Record Functionality)
+function saveRecord(playerName, result, rounds) {
+    const records = JSON.parse(localStorage.getItem('gameRecords')) || [];
+    const newRecord = {
+        date: new Date().toLocaleString('zh-TW', { hour12: false }),
+        playerName: playerName,
+        result: result,
+        rounds: rounds
+    };
+    records.unshift(newRecord);
+    localStorage.setItem('gameRecords', JSON.stringify(records));
+}
+
 function checkWinner() {
     const survivors = players.filter(p => p.hp > 0);
     
-    // 如果只剩一人 (或者全部死光，雖然理論上這遊戲不會全滅但防呆)
     if (survivors.length <= 1) {
         let winnerName = survivors.length === 1 ? survivors[0].name : "無人生還";
         
+        const user = players[0];
+        const result = (survivors.length === 1 && survivors[0].isUser) ? '勝利' : '失敗';
+        if (user.hp > 0 || result === '失敗') {
+            saveRecord(user.name, result, round);
+        }
+
         document.getElementById('gameLog').innerHTML += `<br>🎉🎉 遊戲結束！優勝者是：${winnerName} 🎉🎉`;
         
-        // 讓贏家卡片發光
         const cards = document.querySelectorAll('.player-card');
         cards.forEach(c => {
              if(survivors.length === 1 && c.innerText.includes(survivors[0].name)) {
@@ -304,12 +327,10 @@ function checkWinner() {
              }
         });
         
-        // 直接更新控制區為重新開始，不需要 setTimeout，也不要 disabled 按鈕
-        // 因為這裡一旦回傳 true，後面的 updateControls 就不會執行，不會被覆蓋
         document.getElementById('controls').innerHTML = "<button class='btn-primary' onclick='location.reload()'>重新開始</button>";
         
-        return true; // 回傳：遊戲結束
+        return true;
     }
     
-    return false; // 回傳：遊戲尚未結束
+    return false;
 }

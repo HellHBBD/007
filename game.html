@@ -34,13 +34,13 @@
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <script src="js/script.js"></script>
     <script>
         // 在這裡加入一段小腳本，當頁面載入時自動初始化遊戲
         window.onload = function() {
             // 解析網址參數 (例如 ?playerName=龐德&botCount=3)
             const urlParams = new URLSearchParams(window.location.search);
-            const pName = urlParams.get('playerName') || '玩家1';
+            const pName = urlParams.get('playerName') || '玩家';
             const bCount = parseInt(urlParams.get('botCount')) || 3;
             
             // 呼叫原本 script.js 裡的初始化函數 (需修改 script.js 以接受參數)
@@ -50,5 +50,6 @@
             }
         };
     </script>
+
 </body>
 </html>
