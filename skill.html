@@ -21,43 +21,55 @@
                         </th>
 
                         <th>
-                            <img src="https://placehold.co/100x100?text=Reload" alt="裝彈" class="action-icon">
-                            裝彈
-                        </th>
-                        <th>
-                            <img src="https://placehold.co/100x100?text=Shoot" alt="開槍" class="action-icon">
                             開槍
                         </th>
                         <th>
-                            <img src="https://placehold.co/100x100?text=Defend" alt="防禦" class="action-icon">
                             防禦
                         </th>
                         <th>
-                            <img src="https://placehold.co/100x100?text=Reflect" alt="反彈" class="action-icon">
                             反彈
                         </th>
                         <th>
-                            <img src="https://placehold.co/100x100?text=Bazooka" alt="大砲" class="action-icon">
                             大砲
                         </th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr>
-                        <td class="attacker-col">開槍 (Shoot)</td>
-                        <td>目標淘汰</td>
-                        <td>雙方淘汰</td>
-                        <td>防禦成功</td>
-                        <td><strong>攻擊者自爆</strong><br><small>(反彈)</small></td>
-                        <td>雙方淘汰</td>
+                        <td class="attacker-col">
+                            開槍
+                        </td>
+                        <td>目標防禦成功，雙方存活</td>
+                        <td><strong>攻擊者淘汰</strong><br><small>(被反彈)</small></td>
+                        <td>互射則雙方淘汰</td>
+                        <td>互指則雙方淘汰</td>
                     </tr>
                     <tr>
-                        <td class="attacker-col">大砲 (Bazooka)</td>
-                        <td>目標淘汰</td>
+                        <td class="attacker-col">
+                            防禦
+                        </td>
+                        <td>雙方存活</td>
+                        <td>雙方存活</td>
+                        <td>攻擊方擋下子彈，雙方存活</td>
+                        <td>攻擊方擋下大砲，雙方存活</td>
+                    </tr>
+                    <tr>
+                        <td class="attacker-col">
+                            反彈
+                        </td>
+                        <td>雙方存活</td>
+                        <td>雙方存活</td>
+                        <td><strong>目標淘汰</strong><br><small>(反殺普通攻擊)</small></td>
+                        <td><strong>攻擊者淘汰</strong><br><small>(反彈無效)</small></td>
+                    </tr>
+                    <tr>
+                        <td class="attacker-col">
+                            大砲
+                        </td>
+                        <td>目標防禦成功，雙方存活</td>
+                        <td><strong>目標淘汰</strong><br><small>(反彈無效)</small></td>
                         <td>雙方淘汰</td>
-                        <td>防禦成功</td>
-                        <td><strong>目標淘汰</strong><br><small>(貫穿)</small></td>
-                        <td>雙方淘汰</td>
+                        <td>互轟雙方淘汰</td>
                     </tr>
                 </tbody>
             </table>
