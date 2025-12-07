@@ -16,16 +16,6 @@ let players = [];
 let round = 1;
 let userPendingAction = null; // 暫存玩家選擇的攻擊動作 (打死你/大砲)
 
-// 工具函數
-function showDate() {
-    const dateDisplay = document.getElementById('dateDisplay');
-    if (dateDisplay) {
-        const now = new Date();
-        dateDisplay.innerText = now.toLocaleDateString() + " " + now.toLocaleTimeString();
-    }
-}
-
-
 // 2. 遊戲初始化
 function initGame(userName = "玩家", botCount = 3) {
     
