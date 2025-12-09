@@ -39,37 +39,37 @@
                         <td class="attacker-col">
                             打死你
                         </td>
-                        <td>攻擊抵銷，雙方存活</td>
-                        <td>目標方保護我成功</td>
-                        <td>被反彈，「打死你」者淘汰</td>
+                        <td>攻擊抵銷</td>
+                        <td>保護成功</td>
+                        <td>反彈成功<small><br>(攻擊方淘汰)</small></td>
                         <td>目標方淘汰</td>
                     </tr>
                     <tr>
                         <td class="attacker-col">
                             保護我
                         </td>
-                        <td>保護我成功，雙方存活</td>
-                        <td>無任何攻擊產生</td>
-                        <td>無任何攻擊產生</td>
-                        <td>攻擊方保護我成功</td>
+                        <td>保護成功</td>
+                        <td>----</td>
+                        <td>----</td>
+                        <td>保護成功</td>
                     </tr>
                     <tr>
                         <td class="attacker-col">
                             反彈
                         </td>
-                        <td>攻擊方受反彈，淘汰</td>
-                        <td>無任何攻擊產生</td>
-                        <td>無任何攻擊產生</td>
-                        <td><strong>貫穿，目標方淘汰</strong><br><small>(反彈無效)</small></td>
+                        <td>反彈成功<small><br>(攻擊方淘汰)</small></td>
+                        <td>----</td>
+                        <td>----</td>
+                        <td>目標淘汰<br><small>(反彈無效)</small></td>
                     </tr>
                     <tr>
                         <td class="attacker-col">
                             大砲
                         </td>
                         <td>攻擊方淘汰</td>
-                        <td><strong>目標方保護我成功</strong></td>
-                        <td>攻擊方淘汰</td>
-                        <td>攻擊抵銷，雙方存活</td>
+                        <td>保護成功</td>
+                        <td>反彈失敗<small><br>(攻擊方淘汰)</small></td>
+                        <td>攻擊抵銷</td>
                     </tr>
                 </tbody>
             </table>
@@ -78,9 +78,11 @@
         <div class="note">
             <strong>判定說明：</strong>
             <ul>
-                <li><strong>雙方存活：</strong> 當雙方使用相同的攻擊手段(打死你、大砲)時，攻擊被抵銷，雙方皆存活。</li>
+                <li><strong>攻擊抵銷：</strong> 當雙方使用相同的攻擊手段(打死你、大砲)時，攻擊被抵銷，雙方皆存活。</li>
                 <li><strong>反彈機制：</strong> 只能反彈「打死你」，「大砲」無法被反彈。</li>
-                <li><strong>貫穿效果：</strong> 大砲威力過大，無視「反彈」動作，視為攻擊成功。</li>
+                <li><strong>貫穿效果：</strong> 大砲威力過大，無視「反彈」及「打死你」動作，視為攻擊成功。</li>
+        
+            
             </ul>
         </div>
 
