@@ -39,37 +39,37 @@
                         <td class="attacker-col">
                             開槍
                         </td>
-                        <td>目標防禦成功，雙方存活</td>
-                        <td><strong>攻擊者淘汰</strong><br><small>(被反彈)</small></td>
-                        <td>互射則雙方淘汰</td>
-                        <td>互指則雙方淘汰</td>
+                        <td>攻擊抵銷，雙方存活</td>
+                        <td>目標防禦成功，開槍無效</td>
+                        <td>被反彈，開槍者淘汰</td>
+                        <td>貫穿，開槍者淘汰</td>
                     </tr>
                     <tr>
                         <td class="attacker-col">
                             防禦
                         </td>
-                        <td>雙方存活</td>
-                        <td>雙方存活</td>
-                        <td>攻擊方擋下子彈，雙方存活</td>
-                        <td>攻擊方擋下大砲，雙方存活</td>
+                        <td>防禦成功，雙方存活</td>
+                        <td>無任何攻擊產生</td>
+                        <td>無任何攻擊產生</td>
+                        <td>貫穿，防禦者淘汰</td>
                     </tr>
                     <tr>
                         <td class="attacker-col">
                             反彈
                         </td>
-                        <td>雙方存活</td>
-                        <td>雙方存活</td>
-                        <td><strong>目標淘汰</strong><br><small>(反殺普通攻擊)</small></td>
-                        <td><strong>攻擊者淘汰</strong><br><small>(反彈無效)</small></td>
+                        <td>攻擊方受反彈，淘汰</td>
+                        <td>無任何攻擊產生</td>
+                        <td>無任何攻擊產生</td>
+                        <td><strong>貫穿，目標方淘汰</strong><br><small>(反彈無效)</small></td>
                     </tr>
                     <tr>
                         <td class="attacker-col">
                             大砲
                         </td>
-                        <td>目標防禦成功，雙方存活</td>
-                        <td><strong>目標淘汰</strong><br><small>(反彈無效)</small></td>
-                        <td>雙方淘汰</td>
-                        <td>互轟雙方淘汰</td>
+                        <td>開槍者淘汰</td>
+                        <td><strong>攻擊方淘汰</strong><br><small>(防禦無效)</small></td>
+                        <td>攻擊方淘汰</td>
+                        <td>攻擊抵銷，雙方存活</td>
                     </tr>
                 </tbody>
             </table>
@@ -78,9 +78,9 @@
         <div class="note">
             <strong>判定說明：</strong>
             <ul>
-                <li><strong>雙方淘汰：</strong> 攻擊與被攻擊方同時發動攻擊 (如互射)，兩人皆出局。</li>
+                <li><strong>雙方存活：</strong> 當雙方使用相同的攻擊手段(開槍、大砲)時，攻擊被抵銷，雙方皆存活。</li>
                 <li><strong>反彈機制：</strong> 只能反彈普通手槍，「大砲」無法被反彈。</li>
-                <li><strong>貫穿效果：</strong> 大砲威力過大，遇到「反彈」動作時視為攻擊成功。</li>
+                <li><strong>貫穿效果：</strong> 大砲威力過大，無視「反彈」動作，視為攻擊成功。</li>
             </ul>
         </div>
 
