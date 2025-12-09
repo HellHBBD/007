@@ -196,7 +196,8 @@ body {
     text-align: center;
 }
 
-#skillPage .btn {
+#skillPage .btn,
+#rulesPage .btn {
     display: inline-block;
     padding: 10px 20px;
     margin: 0 5px;
@@ -208,7 +209,8 @@ body {
     transition: all 0.2s;
 }
 
-#skillPage .btn:hover {
+#skillPage .btn:hover,
+#rulesPage .btn:hover {
     background-color: #333;
     color: #fff;
     transform: scale(1);

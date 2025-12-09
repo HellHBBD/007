@@ -22,16 +22,16 @@ const ACTIONS = {
 
 // 全域變數
 let players = [];
-let round = 1;
+let round = 0;
 let userPendingAction = null; // 暫存玩家選擇的攻擊動作 (打死你/大砲)
 
 // 2. 遊戲初始化
 function initGame(userName = '玩家', botCount = 3) {
     players = [];
-    round = 1;
+    round = 0;
     userPendingAction = null;
     document.getElementById('roundDisplay').innerText = round;
-    document.getElementById('gameLog').innerHTML = '遊戲開始！<br>所有玩家圍成一圈...';
+    document.getElementById('gameLog').innerHTML = '遊戲開始！';
 
     // 建立玩家 (User)
     players.push(createPlayer(0, userName, true));
@@ -70,8 +70,8 @@ function renderArena() {
         let statusIcon = p.hp > 0 ? '😊' : '💀';
         if (p.hp > 0 && p.lastAction) {
             if (p.lastAction === 'charge') statusIcon = '🖐 充能';
-            if (p.lastAction === 'shoot') statusIcon = '🔫 開槍';
-            if (p.lastAction === 'defend') statusIcon = '🛡️ 防禦';
+            if (p.lastAction === 'shoot') statusIcon = '🔫 打死你';
+            if (p.lastAction === 'defend') statusIcon = '🛡️ 保護我';
             if (p.lastAction === 'reflect') statusIcon = '🤞 反彈';
             if (p.lastAction === 'bazooka') statusIcon = '🚀 大砲';
         }
@@ -177,7 +177,7 @@ function playerAction(action) {
         return;
     }
 
-    // 如果是充能/防禦/反彈，不需要目標
+    // 如果是充能/保護我/反彈，不需要目標
     if (action !== 'shoot' && action !== 'bazooka') {
         user.targetId = null;
         cancelAttack();
@@ -200,6 +200,7 @@ function playerAction(action) {
 function processRound() {
     const log = document.getElementById('gameLog');
     const user = players[0];
+    round += 1;
     const currentRound = round;
     document.getElementById('roundDisplay').innerText = currentRound;
 
@@ -245,7 +246,6 @@ function processRound() {
     applyCharge(events);
 
     // E. 準備下一回合
-    round++;
     players.forEach((p) => {
         p.targetId = null;
         if (p.hp > 0) {
@@ -265,9 +265,6 @@ function processRound() {
     // 結束：只顯示本回合事件
     document.getElementById('gameLog').innerHTML = roundLog || `--- 第 ${currentRound} 回合 ---<br>（本回合無事件）`;
     document.getElementById('gameLog').scrollTop = document.getElementById('gameLog').scrollHeight;
-
-    // 準備下個回合的計數
-    round = currentRound + 1;
 }
 
 function resolveBazooka(deaths, events) {
