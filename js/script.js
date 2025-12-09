@@ -200,6 +200,8 @@ function playerAction(action) {
 function processRound() {
     const log = document.getElementById('gameLog');
     const user = players[0];
+    const currentRound = round;
+    document.getElementById('roundDisplay').innerText = currentRound;
 
     // 若玩家存活但未選動作，不進行
     if (user.hp > 0 && !user.lastAction) {
@@ -226,66 +228,49 @@ function processRound() {
         p.energy = Math.max(0, p.energy - (ACTIONS[p.lastAction]?.cost ?? 0));
     });
 
-    // C. 顯示動作 (Log)
-    let roundMsg = `<br>--- 第 ${round} 回合 ---<br>`;
-    players.forEach((p) => {
-        if (p.hp > 0 && p.lastAction) {
-            const targetName = p.targetId !== null && p.targetId !== undefined ? ` -> ${players.find((t) => t.id === p.targetId)?.name ?? ''}` : '';
-            let actionName = '';
-            switch (p.lastAction) {
-                case 'charge':
-                    actionName = '充能';
-                    break;
-                case 'shoot':
-                    actionName = '打死你';
-                    break;
-                case 'defend':
-                    actionName = '保護我';
-                    break;
-                case 'reflect':
-                    actionName = '反彈';
-                    break;
-                case 'bazooka':
-                    actionName = '大砲';
-                    break;
-            }
-            roundMsg += `${p.name}: ${actionName}${targetName}<br>`;
-        }
-    });
+    // C. 回合 log：只顯示重要事件
+    const events = [];
     if (roundInvalids.length > 0) {
-        roundMsg += roundInvalids.map((m) => `⚠️ ${m}`).join('<br>') + '<br>';
+        roundInvalids.forEach((m) => events.push(`⚠️ ${m}`));
     }
-    log.innerHTML += roundMsg;
 
     // D. 結算傷害 (Resolution)
     const deaths = new Set();
     const reflectHits = new Map(); // targetId -> [attackerIds]
 
-    resolveBazooka(deaths, log);
-    resolveShoot(deaths, reflectHits, log);
-    resolveReflect(deaths, reflectHits, log);
-    applyDeaths(deaths, log);
-    applyCharge(log);
+    resolveBazooka(deaths, events);
+    resolveShoot(deaths, reflectHits, events);
+    resolveReflect(deaths, reflectHits, events);
+    applyDeaths(deaths, events);
+    applyCharge(events);
 
     // E. 準備下一回合
     round++;
-    document.getElementById('roundDisplay').innerText = round;
     players.forEach((p) => {
         p.targetId = null;
         if (p.hp > 0) {
             // 保留 lastAction 供 UI 顯示，不清空
         }
     });
+
+    const roundLog = [`--- 第 ${currentRound} 回合 ---`, ...events].join('<br>');
     if (renderArena()) {
+        const survivors = players.filter((p) => p.hp > 0);
+        const winnerName = survivors.length === 1 ? survivors[0].name : '無人生還';
+        document.getElementById('gameLog').innerHTML = `${roundLog}<br>🎉🎉 遊戲結束！優勝者是：${winnerName} 🎉🎉`;
         return;
     }
     updateControls();
 
-    // 捲動 log 到最下方
-    log.scrollTop = log.scrollHeight;
+    // 結束：只顯示本回合事件
+    document.getElementById('gameLog').innerHTML = roundLog || `--- 第 ${currentRound} 回合 ---<br>（本回合無事件）`;
+    document.getElementById('gameLog').scrollTop = document.getElementById('gameLog').scrollHeight;
+
+    // 準備下個回合的計數
+    round = currentRound + 1;
 }
 
-function resolveBazooka(deaths, log) {
+function resolveBazooka(deaths, events) {
     players.forEach((attacker) => {
         if (attacker.hp === 0 || deaths.has(attacker.id) || attacker.lastAction !== 'bazooka') return;
         const target = players.find((p) => p.id === attacker.targetId);
@@ -294,22 +279,22 @@ function resolveBazooka(deaths, log) {
         // 大砲互打抵銷
         if (target.lastAction === 'bazooka' && target.targetId === attacker.id) {
             if (attacker.id < target.id) {
-                log.innerHTML += `&nbsp;&nbsp;🚀 ${attacker.name} 與 ${target.name} 大砲對轟，互相抵銷！<br>`;
+                events.push(`🚀 ${attacker.name} 與 ${target.name} 大砲對轟，互相抵銷`);
             }
             return;
         }
 
         if (target.lastAction === 'defend') {
-            log.innerHTML += `&nbsp;&nbsp;🛡️ ${target.name} 擋下了 ${attacker.name} 的大砲！<br>`;
+            events.push(`🛡️ ${target.name} 擋下了 ${attacker.name} 的大砲`);
             return;
         }
 
-        log.innerHTML += `&nbsp;&nbsp;🚀 ${attacker.name} 的大砲擊中 ${target.name}！<br>`;
+        events.push(`🚀 ${attacker.name} 的大砲擊中 ${target.name}`);
         deaths.add(target.id);
     });
 }
 
-function resolveShoot(deaths, reflectHits, log) {
+function resolveShoot(deaths, reflectHits, events) {
     const mutualShootPairs = new Set();
     players.forEach((attacker) => {
         if (attacker.hp === 0 || deaths.has(attacker.id) || attacker.lastAction !== 'shoot') return;
@@ -329,29 +314,28 @@ function resolveShoot(deaths, reflectHits, log) {
         const key = [Math.min(attacker.id, target.id), Math.max(attacker.id, target.id)].join('-');
         if (mutualShootPairs.has(key)) {
             if (attacker.id < target.id) {
-                log.innerHTML += `&nbsp;&nbsp;🔫 ${attacker.name} 與 ${target.name} 互射，子彈抵銷！<br>`;
+                events.push(`🔫 ${attacker.name} 與 ${target.name} 互射，子彈抵銷`);
             }
             return;
         }
 
         if (target.lastAction === 'defend') {
-            log.innerHTML += `&nbsp;&nbsp;🛡️ ${target.name} 擋下了 ${attacker.name} 的子彈！<br>`;
+            events.push(`🛡️ ${target.name} 擋下了 ${attacker.name} 的子彈`);
             return;
         }
 
         if (target.lastAction === 'reflect') {
             if (!reflectHits.has(target.id)) reflectHits.set(target.id, []);
             reflectHits.get(target.id).push(attacker.id);
-            log.innerHTML += `&nbsp;&nbsp;🤞 ${target.name} 反彈準備中，${attacker.name} 子彈被彈回！<br>`;
             return;
         }
 
-        log.innerHTML += `&nbsp;&nbsp;🔫 ${attacker.name} 擊殺 ${target.name}！<br>`;
+        events.push(`🔫 ${attacker.name} 擊殺 ${target.name}`);
         deaths.add(target.id);
     });
 }
 
-function resolveReflect(deaths, reflectHits, log) {
+function resolveReflect(deaths, reflectHits, events) {
     reflectHits.forEach((attackers, targetId) => {
         const target = players.find((p) => p.id === targetId);
         if (!target || target.hp === 0 || deaths.has(target.id)) return; // 大砲先殺了就無法反彈
@@ -359,28 +343,28 @@ function resolveReflect(deaths, reflectHits, log) {
         attackers.forEach((attackerId) => {
             const attacker = players.find((p) => p.id === attackerId);
             if (!attacker || attacker.hp === 0 || deaths.has(attacker.id)) return;
-            log.innerHTML += `&nbsp;&nbsp;💥 ${target.name} 的反彈擊殺了 ${attacker.name}！<br>`;
+            events.push(`💥 ${target.name} 的反彈擊殺了 ${attacker.name}`);
             deaths.add(attacker.id);
         });
     });
 }
 
-function applyDeaths(deaths, log) {
+function applyDeaths(deaths, events) {
     deaths.forEach((id) => {
         const p = players.find((pl) => pl.id === id);
         if (p) {
             p.hp = 0;
-            log.innerHTML += `&nbsp;&nbsp;💀 ${p.name} 淘汰！<br>`;
+            events.push(`💀 ${p.name} 淘汰`);
         }
     });
 }
 
-function applyCharge(log) {
+function applyCharge(events) {
     players.forEach((p) => {
         if (p.hp === 0) return;
         if (p.lastAction === 'charge') {
             p.energy += 1;
-            log.innerHTML += `&nbsp;&nbsp;⚡ ${p.name} 獲得 1 能量（現有 ${p.energy}）。<br>`;
+            // 充能不列入事件
         }
     });
 }

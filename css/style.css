@@ -52,7 +52,7 @@ body {
 
 .log-box {
     background: #333; color: #0f0; font-family: monospace; padding: 10px;
-    height: 100px; overflow-y: auto; border-radius: 5px; margin-bottom: 20px;
+    height: 180px; overflow-y: auto; border-radius: 5px; margin-bottom: 20px;
     border: 2px solid #555;
 }
 
