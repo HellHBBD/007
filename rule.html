@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>007 遊戲規則</title>
+    <link rel="preload" as="image" href="media/封面.jpg" />
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
@@ -49,6 +50,14 @@
         <div class="btn-group">
             <a href="skill.html" class="btn">查看技能對撞表</a>
             <a href="javascript:void(0);" onclick="goToHome()" class="btn">返回</a>
+        </div>
+    </div>
+
+    <div id="imageModal" class="image-modal" aria-hidden="true">
+        <div class="image-modal-content">
+            <button class="modal-close" aria-label="關閉預覽" onclick="closeImageModal()">&times;</button>
+            <img id="modalImage" alt="規則示意圖預覽">
+            <div id="modalCaption" class="image-modal-caption"></div>
         </div>
     </div>
     <script src="js/script.js"></script>

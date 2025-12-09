@@ -19,6 +19,7 @@ const ACTIONS = {
     reflect: { label: '反彈', cost: 1 },
     bazooka: { label: '大砲', cost: 3 },
 };
+const INITIAL_ENERGY = 1;
 
 // 全域變數
 let players = [];
@@ -51,7 +52,7 @@ function createPlayer(id, name, isUser) {
         name,
         isUser,
         hp: 1, // 1: 存活, 0: 淘汰
-        energy: 0,
+        energy: INITIAL_ENERGY,
         lastAction: null,
         targetId: null,
     };
@@ -403,6 +404,43 @@ function saveRecord(playerName, result, rounds) {
     records.unshift(newRecord);
     localStorage.setItem('gameRecords', JSON.stringify(records));
 }
+
+// 7. 規則頁示意圖預覽
+function closeImageModal() {
+    const modal = document.getElementById('imageModal');
+    if (modal) {
+        modal.classList.remove('show');
+        modal.setAttribute('aria-hidden', 'true');
+    }
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const rulesPage = document.getElementById('rulesPage');
+    if (!rulesPage) return;
+
+    const modal = document.getElementById('imageModal');
+    const modalImg = document.getElementById('modalImage');
+    const modalCaption = document.getElementById('modalCaption');
+
+    rulesPage.querySelectorAll('.action-icon').forEach((img) => {
+        img.addEventListener('click', () => {
+            if (!modal || !modalImg) return;
+            modalImg.src = img.src;
+            modalImg.alt = img.alt || '示意圖預覽';
+            if (modalCaption) modalCaption.innerText = img.alt || '';
+            modal.classList.add('show');
+            modal.setAttribute('aria-hidden', 'false');
+        });
+    });
+
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                closeImageModal();
+            }
+        });
+    }
+});
 
 function checkWinner() {
     const survivors = players.filter((p) => p.hp > 0);
