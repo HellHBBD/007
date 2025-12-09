@@ -89,6 +89,7 @@ body.skill-body {
     border: 5px solid #ddd; border-radius: 10px; padding: 10px; width: 140px; text-align: center;
     background: #f8f9fa; transition: all 0.3s;
 }
+.player-card.selectable-target { cursor: pointer; box-shadow: 0 0 12px rgba(255, 255, 255, 0.6); transform: translateY(-2px); }
 .player-card.user { border-color: #1e3c72; background: #eef2ff; }
 .player-card.dead { opacity: 0.5; background: #555; color: white; text-decoration: line-through; }
 .player-card.winner { border-color: gold; background: #fffbe6; transform: scale(1.1); box-shadow: 0 0 15px gold; }

@@ -66,6 +66,10 @@ function renderArena() {
     players.forEach((p) => {
         const div = document.createElement('div');
         div.className = `player-card ${p.isUser ? 'user' : ''} ${p.hp === 0 ? 'dead' : ''}`;
+        div.dataset.playerId = p.id;
+        if (!p.isUser && p.hp > 0) {
+            div.onclick = () => selectTargetFromCard(p.id);
+        }
 
         // 狀態顯示
         let statusIcon = p.hp > 0 ? '😊' : '💀';
@@ -88,6 +92,7 @@ function renderArena() {
     });
 
     // 檢查是否有贏家
+    updateTargetHighlights();
     return checkWinner();
 }
 
@@ -109,11 +114,6 @@ function updateControls() {
             <button class="btn-action btn-danger" id="btnShoot" onclick="prepareAttack('shoot')"> 🔫 打死你<br /><small>(耗1能)</small> </button>
             <button class="btn-action btn-purple" id="btnBazooka" onclick="prepareAttack('bazooka')"> 🚀 大砲<br /><small>(耗3能)</small> </button>
         </div>
-        <div id="targetSelector" style="display: none; margin-top: 15px">
-            <p>要攻擊誰？</p>
-            <div id="targetButtons"></div>
-            <button class="btn-small" onclick="cancelAttack()">取消</button>
-        </div>
     `;
 
     document.getElementById('btnDefend').disabled = user.energy < ACTIONS.defend.cost;
@@ -132,8 +132,7 @@ function prepareAttack(type) {
     }
 
     userPendingAction = type;
-    const btnContainer = document.getElementById('targetButtons');
-    btnContainer.innerHTML = '';
+    updateTargetHighlights();
 
     const aliveTargets = players.filter((p) => !p.isUser && p.hp > 0);
     if (aliveTargets.length === 0) {
@@ -149,23 +148,15 @@ function prepareAttack(type) {
     }
 
     aliveTargets.forEach((p) => {
-        const btn = document.createElement('button');
-        btn.className = 'btn-small';
-        btn.style.margin = '5px';
-        btn.innerText = p.name;
-        btn.onclick = () => {
-            players[0].targetId = p.id;
-            playerAction(userPendingAction); // 執行動作
-        };
-        btnContainer.appendChild(btn);
+        // 點擊卡片選擇目標，故不產生按鈕
     });
 
-    document.getElementById('targetSelector').style.display = 'block';
+    addLog('<br>請點擊對手頭像選擇攻擊目標');
 }
 
 function cancelAttack() {
     userPendingAction = null;
-    document.getElementById('targetSelector').style.display = 'none';
+    updateTargetHighlights();
 }
 
 function playerAction(action) {
@@ -186,8 +177,8 @@ function playerAction(action) {
         // 攻擊類行動需要目標
         const target = players.find((p) => p.id === user.targetId && p.hp > 0);
         if (!target) {
-            document.getElementById('targetSelector').style.display = 'block';
-            addLog('⚠️ 請選擇一個存活的目標');
+            addLog('⚠️ 請點擊一個存活的對手頭像作為目標');
+            updateTargetHighlights();
             return;
         }
         cancelAttack();
@@ -195,6 +186,28 @@ function playerAction(action) {
 
     user.lastAction = action;
     processRound();
+}
+
+function selectTargetFromCard(targetId) {
+    if (!userPendingAction) return;
+    const target = players.find((p) => p.id === targetId && !p.isUser && p.hp > 0);
+    if (!target) return;
+    players[0].targetId = targetId;
+    playerAction(userPendingAction);
+}
+
+function updateTargetHighlights() {
+    const cards = document.querySelectorAll('.player-card');
+    cards.forEach((card) => {
+        const pid = Number(card.dataset.playerId);
+        const p = players.find((pl) => pl.id === pid);
+        if (!p) return;
+        if (userPendingAction && !p.isUser && p.hp > 0) {
+            card.classList.add('selectable-target');
+        } else {
+            card.classList.remove('selectable-target');
+        }
+    });
 }
 
 // 5. 電腦 AI 與回合結算 (核心邏輯)
