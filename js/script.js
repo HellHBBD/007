@@ -11,24 +11,33 @@ function goToRules() {
     window.location.href = 'rule.html';
 }
 
+// 行動定義
+const ACTIONS = {
+    charge: { label: '充能', cost: 0 },
+    shoot: { label: '打死你', cost: 1 },
+    defend: { label: '保護我', cost: 1 },
+    reflect: { label: '反彈', cost: 1 },
+    bazooka: { label: '大砲', cost: 3 },
+};
+
 // 全域變數
 let players = [];
 let round = 1;
 let userPendingAction = null; // 暫存玩家選擇的攻擊動作 (打死你/大砲)
 
 // 2. 遊戲初始化
-function initGame(userName = "玩家", botCount = 3) {
-    
+function initGame(userName = '玩家', botCount = 3) {
     players = [];
     round = 1;
+    userPendingAction = null;
     document.getElementById('roundDisplay').innerText = round;
-    document.getElementById('gameLog').innerHTML = "遊戲開始！<br>所有玩家圍成一圈...";
+    document.getElementById('gameLog').innerHTML = '遊戲開始！<br>所有玩家圍成一圈...';
 
     // 建立玩家 (User)
     players.push(createPlayer(0, userName, true));
 
     // 建立電腦 (Bots)
-    for(let i=1; i<=botCount; i++) {
+    for (let i = 1; i <= botCount; i++) {
         players.push(createPlayer(i, `電腦 ${i}`, false));
     }
 
@@ -38,43 +47,40 @@ function initGame(userName = "玩家", botCount = 3) {
 
 function createPlayer(id, name, isUser) {
     return {
-        id: id,
-        name: name,
-        isUser: isUser,
+        id,
+        name,
+        isUser,
         hp: 1, // 1: 存活, 0: 淘汰
-        ammo: 0,
-        charge: 0, // 集氣次數
-        lastAction: '',
-        targetId: null
+        energy: 0,
+        lastAction: null,
+        targetId: null,
     };
 }
 
 // 3. 渲染畫面 (更新 UI)
 function renderArena() {
     const arena = document.getElementById('arena');
-    arena.innerHTML = ''; //初始化 清空
+    arena.innerHTML = '';
 
-    players.forEach(p => {
+    players.forEach((p) => {
         const div = document.createElement('div');
         div.className = `player-card ${p.isUser ? 'user' : ''} ${p.hp === 0 ? 'dead' : ''}`;
-        
+
         // 狀態顯示
         let statusIcon = p.hp > 0 ? '😊' : '💀';
         if (p.hp > 0 && p.lastAction) {
-            // 顯示上回合動作圖示
-            if(p.lastAction === 'load') statusIcon = '🖐 裝彈';
-            if(p.lastAction === 'shoot') statusIcon = '🔫 開槍';
-            if(p.lastAction === 'defend') statusIcon = '🛡️ 防禦';
-            if(p.lastAction === 'reflect') statusIcon = '🤞 反彈';
-            if(p.lastAction === 'bazooka') statusIcon = '🚀 大砲';
+            if (p.lastAction === 'charge') statusIcon = '🖐 充能';
+            if (p.lastAction === 'shoot') statusIcon = '🔫 開槍';
+            if (p.lastAction === 'defend') statusIcon = '🛡️ 防禦';
+            if (p.lastAction === 'reflect') statusIcon = '🤞 反彈';
+            if (p.lastAction === 'bazooka') statusIcon = '🚀 大砲';
         }
 
         div.innerHTML = `
             <div style="font-size:24px">${statusIcon}</div>
             <strong>${p.name}</strong>
             <div class="stats">
-                <span class="stat-badge">彈: ${p.ammo}</span>
-                <span class="stat-badge" style="background:${p.charge >=3 ? '#ffeb3b': '#ddd'}">氣: ${p.charge}</span>
+                <span class="stat-badge">能量: ${p.energy}</span>
             </div>
         `;
         arena.appendChild(div);
@@ -86,197 +92,318 @@ function renderArena() {
 
 function updateControls() {
     const user = players[0];
+    const controls = document.getElementById('controls');
+
     if (user.hp === 0) {
-        document.getElementById('controls').innerHTML = "<h3>你已經被淘汰了... 觀戰模式</h3><button class='btn-primary' onclick='processRound()'>觀看下一回合</button>";
+        controls.innerHTML = "<h3>你已經被淘汰了... 觀戰模式</h3><button class='btn-primary' onclick='processRound()'>觀看下一回合</button>";
         return;
     }
 
-    // 檢查按鈕狀態
-    document.getElementById('btnShoot').disabled = (user.ammo <= 0);
-    document.getElementById('btnBazooka').disabled = (user.charge < 3); // 規則：需集氣3次，第4次可用
-    
-    // 重置攻擊選單
-    document.getElementById('targetSelector').style.display = 'none';
+    controls.innerHTML = `
+        <h3>選擇你的動作：</h3>
+        <div class="action-buttons">
+            <button class="btn-action" id="btnCharge" onclick="playerAction('charge')"> 🖐 充能<br /><small>(能量 +1)</small> </button>
+            <button class="btn-action" id="btnDefend" onclick="playerAction('defend')"> 🛡️ 保護我<br /><small>(耗1能)</small> </button>
+            <button class="btn-action" id="btnReflect" onclick="playerAction('reflect')"> 🤞 反彈<br /><small>(耗1能)</small> </button>
+            <button class="btn-action btn-danger" id="btnShoot" onclick="prepareAttack('shoot')"> 🔫 打死你<br /><small>(耗1能)</small> </button>
+            <button class="btn-action btn-purple" id="btnBazooka" onclick="prepareAttack('bazooka')"> 🚀 大砲<br /><small>(耗3能)</small> </button>
+        </div>
+        <div id="targetSelector" style="display: none; margin-top: 15px">
+            <p>要攻擊誰？</p>
+            <div id="targetButtons"></div>
+            <button class="btn-small" onclick="cancelAttack()">取消</button>
+        </div>
+    `;
+
+    document.getElementById('btnDefend').disabled = user.energy < ACTIONS.defend.cost;
+    document.getElementById('btnReflect').disabled = user.energy < ACTIONS.reflect.cost;
+    document.getElementById('btnShoot').disabled = user.energy < ACTIONS.shoot.cost;
+    document.getElementById('btnBazooka').disabled = user.energy < ACTIONS.bazooka.cost;
 }
 
 // 4. 玩家動作處理
 function prepareAttack(type) {
-    // 顯示目標選擇按鈕
+    const user = players[0];
+    if (user.hp === 0) return;
+    if (user.energy < ACTIONS[type].cost) {
+        addLog(`⚠️ 能量不足，無法使用${ACTIONS[type].label}`);
+        return;
+    }
+
     userPendingAction = type;
     const btnContainer = document.getElementById('targetButtons');
     btnContainer.innerHTML = '';
-    
-    players.forEach(p => {
-        // 只能攻擊活著的其他人
-        if (!p.isUser && p.hp > 0) {
-            const btn = document.createElement('button');
-            btn.className = 'btn-small';
-            btn.style.margin = '5px';
-            btn.innerText = p.name;
-            btn.onclick = () => {
-                players[0].targetId = p.id;
-                playerAction(userPendingAction); // 執行動作
-            };
-            btnContainer.appendChild(btn);
-        }
+
+    const aliveTargets = players.filter((p) => !p.isUser && p.hp > 0);
+    if (aliveTargets.length === 0) {
+        addLog('⚠️ 沒有可攻擊的對象');
+        return;
+    }
+
+    // 只有一個對手時自動鎖定，不需選擇
+    if (aliveTargets.length === 1) {
+        players[0].targetId = aliveTargets[0].id;
+        playerAction(type);
+        return;
+    }
+
+    aliveTargets.forEach((p) => {
+        const btn = document.createElement('button');
+        btn.className = 'btn-small';
+        btn.style.margin = '5px';
+        btn.innerText = p.name;
+        btn.onclick = () => {
+            players[0].targetId = p.id;
+            playerAction(userPendingAction); // 執行動作
+        };
+        btnContainer.appendChild(btn);
     });
-    
+
     document.getElementById('targetSelector').style.display = 'block';
 }
 
 function cancelAttack() {
+    userPendingAction = null;
     document.getElementById('targetSelector').style.display = 'none';
 }
 
 function playerAction(action) {
     const user = players[0];
-    user.lastAction = action;
+    if (user.hp === 0) return;
 
-    // 扣除消耗
-    if (action === 'shoot') user.ammo--;
-    // 大砲不扣子彈，只看集氣，規則沒說扣氣，這裡假設大砲發射後集氣歸零，避免連續大砲
-    if (action === 'bazooka') user.charge = 0; 
-
-    // 如果是裝彈/防禦/反彈，不需要目標
-    if (action !== 'shoot' && action !== 'bazooka') {
-        user.targetId = null;
+    const cost = ACTIONS[action]?.cost ?? 0;
+    if (user.energy < cost) {
+        addLog(`⚠️ 能量不足，無法使用${ACTIONS[action].label}`);
+        return;
     }
 
-    processRound(); // 進入回合結算
+    // 如果是充能/防禦/反彈，不需要目標
+    if (action !== 'shoot' && action !== 'bazooka') {
+        user.targetId = null;
+        cancelAttack();
+    } else {
+        // 攻擊類行動需要目標
+        const target = players.find((p) => p.id === user.targetId && p.hp > 0);
+        if (!target) {
+            document.getElementById('targetSelector').style.display = 'block';
+            addLog('⚠️ 請選擇一個存活的目標');
+            return;
+        }
+        cancelAttack();
+    }
+
+    user.lastAction = action;
+    processRound();
 }
 
 // 5. 電腦 AI 與回合結算 (核心邏輯)
 function processRound() {
     const log = document.getElementById('gameLog');
-    
+    const user = players[0];
+
+    // 若玩家存活但未選動作，不進行
+    if (user.hp > 0 && !user.lastAction) {
+        addLog('⚠️ 請先選擇行動');
+        return;
+    }
+
     // A. 電腦決定動作
-    players.forEach(p => {
+    players.forEach((p) => {
         if (!p.isUser && p.hp > 0) {
             decideBotAction(p);
         }
     });
 
-    // B. 顯示動作 (Log)
+    // B. 扣能量 & 檢查非法行動
+    const roundInvalids = [];
+    players.forEach((p) => {
+        if (p.hp === 0 || !p.lastAction) return;
+        const cost = ACTIONS[p.lastAction]?.cost ?? 0;
+        if (p.energy < cost) {
+            roundInvalids.push(`${p.name} 能量不足，行動被取消`);
+            p.lastAction = 'charge';
+        }
+        p.energy = Math.max(0, p.energy - (ACTIONS[p.lastAction]?.cost ?? 0));
+    });
+
+    // C. 顯示動作 (Log)
     let roundMsg = `<br>--- 第 ${round} 回合 ---<br>`;
-    players.forEach(p => {
-        if (p.hp > 0) {
-            let targetName = p.targetId !== null ? ` -> ${players[p.targetId].name}` : "";
-            let actionName = "";
-            switch(p.lastAction) {
-                case 'load': actionName = "裝子彈"; break;
-                case 'shoot': actionName = "打死你"; break;
-                case 'defend': actionName = "保護我"; break;
-                case 'reflect': actionName = "反彈"; break;
-                case 'bazooka': actionName = "發射大砲"; break;
+    players.forEach((p) => {
+        if (p.hp > 0 && p.lastAction) {
+            const targetName = p.targetId !== null && p.targetId !== undefined ? ` -> ${players.find((t) => t.id === p.targetId)?.name ?? ''}` : '';
+            let actionName = '';
+            switch (p.lastAction) {
+                case 'charge':
+                    actionName = '充能';
+                    break;
+                case 'shoot':
+                    actionName = '打死你';
+                    break;
+                case 'defend':
+                    actionName = '保護我';
+                    break;
+                case 'reflect':
+                    actionName = '反彈';
+                    break;
+                case 'bazooka':
+                    actionName = '大砲';
+                    break;
             }
             roundMsg += `${p.name}: ${actionName}${targetName}<br>`;
         }
     });
+    if (roundInvalids.length > 0) {
+        roundMsg += roundInvalids.map((m) => `⚠️ ${m}`).join('<br>') + '<br>';
+    }
     log.innerHTML += roundMsg;
 
-    // C. 結算傷害 (Resolution)
-    // 先處理裝彈效果
-    players.forEach(p => {
-        if(p.hp > 0 && p.lastAction === 'load') {
-            p.ammo++;
-            p.charge++;
-        }
-    });
+    // D. 結算傷害 (Resolution)
+    const deaths = new Set();
+    const reflectHits = new Map(); // targetId -> [attackerIds]
 
-    // 處理攻擊
-    let deaths = []; // 紀錄誰死了
+    resolveBazooka(deaths, log);
+    resolveShoot(deaths, reflectHits, log);
+    resolveReflect(deaths, reflectHits, log);
+    applyDeaths(deaths, log);
+    applyCharge(log);
 
-    players.forEach(attacker => {
-        if (attacker.hp > 0 && (attacker.lastAction === 'shoot' || attacker.lastAction === 'bazooka')) {
-            const target = players.find(t => t.id === attacker.targetId);
-            
-            if (target && target.hp > 0) {
-                let isDead = false;
-                let isReflected = false;
-
-                // 規則判定
-                if (attacker.lastAction === 'shoot') {
-                    // 普通開槍
-                    if (target.lastAction === 'defend') {
-                        log.innerHTML += `&nbsp;&nbsp;🛡️ ${target.name} 擋下了 ${attacker.name} 的子彈！<br>`;
-                    } else if (target.lastAction === 'reflect') {
-                        log.innerHTML += `&nbsp;&nbsp;🤞 ${target.name} 反彈！${attacker.name} 自爆了！<br>`;
-                        isReflected = true; // 攻擊者死
-                    } else {
-                        isDead = true; // 目標死
-                    }
-                } else if (attacker.lastAction === 'bazooka') {
-                    // 大砲 (無視反彈，但可防禦)
-                    if (target.lastAction === 'defend') {
-                        log.innerHTML += `&nbsp;&nbsp;🛡️ ${target.name} 驚險擋下了 ${attacker.name} 的大砲！<br>`;
-                    } else {
-                        // 即使反彈也無效，目標死
-                        if (target.lastAction === 'reflect') {
-                            log.innerHTML += `&nbsp;&nbsp;🚀 反彈無效！${target.name} 被大砲炸飛！<br>`;
-                        }
-                        isDead = true;
-                    }
-                }
-
-                if (isDead) {
-                    if(!deaths.includes(target.id)) deaths.push(target.id);
-                    log.innerHTML += `&nbsp;&nbsp;💀 ${target.name} 淘汰！<br>`;
-                }
-                if (isReflected) {
-                    if(!deaths.includes(attacker.id)) deaths.push(attacker.id);
-                    log.innerHTML += `&nbsp;&nbsp;💀 ${attacker.name} 淘汰！<br>`;
-                }
-            }
-        }
-    });
-
-    // 移除死亡玩家
-    deaths.forEach(id => {
-        const p = players.find(p => p.id === id);
-        if(p) p.hp = 0;
-    });
-
-    // D. 準備下一回合
+    // E. 準備下一回合
     round++;
     document.getElementById('roundDisplay').innerText = round;
+    players.forEach((p) => {
+        p.targetId = null;
+        if (p.hp > 0) {
+            // 保留 lastAction 供 UI 顯示，不清空
+        }
+    });
     if (renderArena()) {
         return;
     }
     updateControls();
-    
+
     // 捲動 log 到最下方
     log.scrollTop = log.scrollHeight;
 }
 
+function resolveBazooka(deaths, log) {
+    players.forEach((attacker) => {
+        if (attacker.hp === 0 || deaths.has(attacker.id) || attacker.lastAction !== 'bazooka') return;
+        const target = players.find((p) => p.id === attacker.targetId);
+        if (!target || target.hp === 0 || deaths.has(target.id)) return;
+
+        // 大砲互打抵銷
+        if (target.lastAction === 'bazooka' && target.targetId === attacker.id) {
+            if (attacker.id < target.id) {
+                log.innerHTML += `&nbsp;&nbsp;🚀 ${attacker.name} 與 ${target.name} 大砲對轟，互相抵銷！<br>`;
+            }
+            return;
+        }
+
+        if (target.lastAction === 'defend') {
+            log.innerHTML += `&nbsp;&nbsp;🛡️ ${target.name} 擋下了 ${attacker.name} 的大砲！<br>`;
+            return;
+        }
+
+        log.innerHTML += `&nbsp;&nbsp;🚀 ${attacker.name} 的大砲擊中 ${target.name}！<br>`;
+        deaths.add(target.id);
+    });
+}
+
+function resolveShoot(deaths, reflectHits, log) {
+    const mutualShootPairs = new Set();
+    players.forEach((attacker) => {
+        if (attacker.hp === 0 || deaths.has(attacker.id) || attacker.lastAction !== 'shoot') return;
+        const target = players.find((p) => p.id === attacker.targetId);
+        if (!target || target.hp === 0 || deaths.has(target.id)) return;
+        if (target.lastAction === 'shoot' && target.targetId === attacker.id) {
+            const key = [Math.min(attacker.id, target.id), Math.max(attacker.id, target.id)].join('-');
+            mutualShootPairs.add(key);
+        }
+    });
+
+    players.forEach((attacker) => {
+        if (attacker.hp === 0 || deaths.has(attacker.id) || attacker.lastAction !== 'shoot') return;
+        const target = players.find((p) => p.id === attacker.targetId);
+        if (!target || target.hp === 0 || deaths.has(target.id)) return;
+
+        const key = [Math.min(attacker.id, target.id), Math.max(attacker.id, target.id)].join('-');
+        if (mutualShootPairs.has(key)) {
+            if (attacker.id < target.id) {
+                log.innerHTML += `&nbsp;&nbsp;🔫 ${attacker.name} 與 ${target.name} 互射，子彈抵銷！<br>`;
+            }
+            return;
+        }
+
+        if (target.lastAction === 'defend') {
+            log.innerHTML += `&nbsp;&nbsp;🛡️ ${target.name} 擋下了 ${attacker.name} 的子彈！<br>`;
+            return;
+        }
+
+        if (target.lastAction === 'reflect') {
+            if (!reflectHits.has(target.id)) reflectHits.set(target.id, []);
+            reflectHits.get(target.id).push(attacker.id);
+            log.innerHTML += `&nbsp;&nbsp;🤞 ${target.name} 反彈準備中，${attacker.name} 子彈被彈回！<br>`;
+            return;
+        }
+
+        log.innerHTML += `&nbsp;&nbsp;🔫 ${attacker.name} 擊殺 ${target.name}！<br>`;
+        deaths.add(target.id);
+    });
+}
+
+function resolveReflect(deaths, reflectHits, log) {
+    reflectHits.forEach((attackers, targetId) => {
+        const target = players.find((p) => p.id === targetId);
+        if (!target || target.hp === 0 || deaths.has(target.id)) return; // 大砲先殺了就無法反彈
+
+        attackers.forEach((attackerId) => {
+            const attacker = players.find((p) => p.id === attackerId);
+            if (!attacker || attacker.hp === 0 || deaths.has(attacker.id)) return;
+            log.innerHTML += `&nbsp;&nbsp;💥 ${target.name} 的反彈擊殺了 ${attacker.name}！<br>`;
+            deaths.add(attacker.id);
+        });
+    });
+}
+
+function applyDeaths(deaths, log) {
+    deaths.forEach((id) => {
+        const p = players.find((pl) => pl.id === id);
+        if (p) {
+            p.hp = 0;
+            log.innerHTML += `&nbsp;&nbsp;💀 ${p.name} 淘汰！<br>`;
+        }
+    });
+}
+
+function applyCharge(log) {
+    players.forEach((p) => {
+        if (p.hp === 0) return;
+        if (p.lastAction === 'charge') {
+            p.energy += 1;
+            log.innerHTML += `&nbsp;&nbsp;⚡ ${p.name} 獲得 1 能量（現有 ${p.energy}）。<br>`;
+        }
+    });
+}
+
 function decideBotAction(bot) {
-    // 簡單 AI 邏輯
-    let availableActions = ['load', 'defend'];
-    
-    // 有子彈才能射擊
-    if (bot.ammo > 0) availableActions.push('shoot');
-    
-    // 有子彈且為了平衡，偶爾會反彈
-    availableActions.push('reflect'); 
+    // 依據能量決定可用行動
+    const available = ['charge'];
+    if (bot.energy >= ACTIONS.defend.cost) available.push('defend');
+    if (bot.energy >= ACTIONS.reflect.cost) available.push('reflect');
+    if (bot.energy >= ACTIONS.shoot.cost) available.push('shoot');
+    if (bot.energy >= ACTIONS.bazooka.cost) available.push('bazooka');
 
-    // 氣滿了可以用大砲
-    if (bot.charge >= 3) availableActions.push('bazooka');
-
-    // 隨機選擇動作
-    const action = availableActions[Math.floor(Math.random() * availableActions.length)];
+    const action = available[Math.floor(Math.random() * available.length)];
     bot.lastAction = action;
 
-    // 隨機選擇攻擊目標 (如果是攻擊動作)
     if (action === 'shoot' || action === 'bazooka') {
-        bot.ammo = (action === 'shoot') ? bot.ammo - 1 : bot.ammo; // 大砲不扣彈? 這裡假設不扣
-        if (action === 'bazooka') bot.charge = 0;
-
-        // 找出活著的對手
-        const targets = players.filter(p => p.id !== bot.id && p.hp > 0);
+        const targets = players.filter((p) => p.id !== bot.id && p.hp > 0);
         if (targets.length > 0) {
             const randomTarget = targets[Math.floor(Math.random() * targets.length)];
             bot.targetId = randomTarget.id;
         } else {
-            bot.lastAction = 'defend'; // 沒人可打就防禦
+            bot.lastAction = 'charge';
+            bot.targetId = null;
         }
     } else {
         bot.targetId = null;
@@ -290,37 +417,43 @@ function saveRecord(playerName, result, rounds) {
         date: new Date().toLocaleString('zh-TW', { hour12: false }),
         playerName: playerName,
         result: result,
-        rounds: rounds
+        rounds: rounds,
     };
     records.unshift(newRecord);
     localStorage.setItem('gameRecords', JSON.stringify(records));
 }
 
 function checkWinner() {
-    const survivors = players.filter(p => p.hp > 0);
-    
+    const survivors = players.filter((p) => p.hp > 0);
+
     if (survivors.length <= 1) {
-        let winnerName = survivors.length === 1 ? survivors[0].name : "無人生還";
-        
+        const winnerName = survivors.length === 1 ? survivors[0].name : '無人生還';
+
         const user = players[0];
-        const result = (survivors.length === 1 && survivors[0].isUser) ? '勝利' : '失敗';
+        const result = survivors.length === 1 && survivors[0].isUser ? '勝利' : '失敗';
         if (user.hp > 0 || result === '失敗') {
             saveRecord(user.name, result, round);
         }
 
         document.getElementById('gameLog').innerHTML += `<br>🎉🎉 遊戲結束！優勝者是：${winnerName} 🎉🎉`;
-        
+
         const cards = document.querySelectorAll('.player-card');
-        cards.forEach(c => {
-             if(survivors.length === 1 && c.innerText.includes(survivors[0].name)) {
-                 c.classList.add('winner');
-             }
+        cards.forEach((c) => {
+            if (survivors.length === 1 && c.innerText.includes(survivors[0].name)) {
+                c.classList.add('winner');
+            }
         });
-        
+
         document.getElementById('controls').innerHTML = "<button class='btn-primary' onclick='location.reload()'>重新開始</button>";
-        
+
         return true;
     }
-    
+
     return false;
+}
+
+function addLog(message) {
+    const log = document.getElementById('gameLog');
+    log.innerHTML += `${message}<br>`;
+    log.scrollTop = log.scrollHeight;
 }

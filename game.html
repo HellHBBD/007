@@ -20,11 +20,11 @@
         <div id="controls" class="controls-area">
             <h3>選擇你的動作：</h3>
             <div class="action-buttons">
-                <button class="btn-action" onclick="playerAction('load')"> 🖐 蓄能<br /><small>(+1彈)</small> </button>
-                <button class="btn-action" onclick="playerAction('defend')"> 🛡️ 保護我<br /><small>(防禦)</small> </button>
-                <button class="btn-action" onclick="playerAction('reflect')"> 🤞 反彈<br /><small>(反殺)</small> </button>
-                <button class="btn-action btn-danger" id="btnShoot" onclick="prepareAttack('shoot')" disabled> 🔫 打死你<br /><small>(需1彈)</small> </button>
-                <button class="btn-action btn-purple" id="btnBazooka" onclick="prepareAttack('bazooka')" disabled> 🚀 大砲<br /><small>(需3氣)</small> </button>
+                <button class="btn-action" onclick="playerAction('charge')"> 🖐 充能<br /><small>(能量 +1)</small> </button>
+                <button class="btn-action" onclick="playerAction('defend')"> 🛡️ 保護我<br /><small>(耗1能)</small> </button>
+                <button class="btn-action" onclick="playerAction('reflect')"> 🤞 反彈<br /><small>(耗1能)</small> </button>
+                <button class="btn-action btn-danger" id="btnShoot" onclick="prepareAttack('shoot')" disabled> 🔫 打死你<br /><small>(耗1能)</small> </button>
+                <button class="btn-action btn-purple" id="btnBazooka" onclick="prepareAttack('bazooka')" disabled> 🚀 大砲<br /><small>(耗3能)</small> </button>
             </div>
             <div id="targetSelector" style="display: none; margin-top: 15px">
                 <p>要攻擊誰？</p>
